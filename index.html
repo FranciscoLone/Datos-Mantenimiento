@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Reportes Técnicos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #3b82f6;
+            --accent: #7c3aed;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: var(--gray);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .form-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-col {
+            flex: 1;
+        }
+        
+        .photo-upload {
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        .photo-upload:hover {
+            border-color: var(--primary);
+        }
+        
+        .photo-upload i {
+            font-size: 3rem;
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+        
+        .photo-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .photo-item {
+            width: 150px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .photo-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+        
+        .photo-caption {
+            padding: 8px;
+            font-size: 14px;
+            text-align: center;
+            background-color: #f8f9fa;
+        }
+        
+        .remove-photo {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: var(--danger);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .tab-container {
+            margin-bottom: 30px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        
+        .tab.active {
+            background-color: white;
+            border-bottom: 2px solid white;
+            margin-bottom: -2px;
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .signature-pad {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .signature-container {
+            border: 1px dashed #ddd;
+            height: 150px;
+            margin-bottom: 15px;
+            background-color: white;
+            cursor: crosshair;
+        }
+        
+        .air-conditioner-section {
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            background-color: #f0f7ff;
+        }
+        
+        .air-conditioner-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .air-conditioner-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .remove-air-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .photo-item {
+                width: 100%;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo"><i class="fas fa-file-contract"></i> ReportesTécnicos</a>
+                <div>
+                    <button class="btn btn-secondary" id="saveBtn"><i class="fas fa-save"></i> Guardar</button>
+                    <button class="btn btn-success" id="generatePdf"><i class="fas fa-file-pdf"></i> Generar PDF</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="form-section">
+            <h2 class="section-title">Información General del Sitio</h2>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="pais">País</label>
+                        <input type="text" id="pais" class="form-control" placeholder="Ej: El Salvador">
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="fecha">Fecha</label>
+                        <input type="date" id="fecha" class="form-control">
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="identificador">Identificador</label>
+                        <input type="text" id="identificador" class="form-control" placeholder="Ej: AA - 20250603143947">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="idSitio">ID Sitio</label>
+                        <input type="text" id="idSitio" class="form-control" placeholder="Ej: SJACTO">
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="nombreSitio">Nombre Sitio</label>
+                        <input type="text" id="nombreSitio" class="form-control" placeholder="Ej: BTS SAN JACINTO">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="region">Región</label>
+                        <input type="text" id="region" class="form-control" placeholder="Ej: CENTRO">
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="departamento">Departamento</label>
+                        <input type="text" id="departamento" class="form-control" placeholder="Ej: SAN SALVADOR">
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="tipoSitio">Tipo</label>
+                        <input type="text" id="tipoSitio" class="form-control" placeholder="Ej: BTS">
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="categoria">Categoría</label>
+                        <input type="text" id="categoria" class="form-control" placeholder="Ej: C">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="latitud">Latitud</label>
+                        <input type="text" id="latitud" class="form-control" placeholder="Ej: 13.686237">
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="longitud">Longitud</label>
+                        <input type="text" id="longitud" class="form-control" placeholder="Ej: -89.1909106">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="supervisor">Supervisor</label>
+                        <input type="text" id="supervisor" class="form-control" placeholder="Ej: CARLOS ALVARADO">
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="supervisorClaro">Supervisor Claro</label>
+                        <input type="text" id="supervisorClaro" class="form-control" placeholder="Ej: Mauricio Pocasangre">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="empresa">Empresa</label>
+                        <input type="text" id="empresa" class="form-control" placeholder="Ej: OFG">
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="tecnico">Técnico</label>
+                        <input type="text" id="tecnico" class="form-control" placeholder="Ej: Jorge Pérez">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="aire">Aire Acondicionado</div>
+                <div class="tab" data-tab="energia">Energía</div>
+                <div class="tab" data-tab="infraestructura">Infraestructura</div>
+                <div class="tab" data-tab="rectificadores">Rectificadores</div>
+                <div class="tab" data-tab="tierras">Sistemas de Tierras</div>
+            </div>
+            
+            <div class="tab-content active" id="aire-content">
+                <div id="aires-container">
+                    <!-- Sección para el primer aire acondicionado -->
+                    <div class="air-conditioner-section" id="air-section-1">
+                        <div class="air-conditioner-header">
+                            <div class="air-conditioner-title">Aire Acondicionado #1</div>
+                            <button class="remove-air-btn" data-air-id="1" style="display: none;">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="tipoAire1">Tipo de Aire</label>
+                                    <select id="tipoAire1" class="form-control">
+                                        <option value="" selected disabled>Seleccione el tipo</option>
+                                        <option value="MINI SPLIT">MINI SPLIT</option>
+                                        <option value="SPLIT">SPLIT</option>
+                                        <option value="VENTANA">VENTANA</option>
+                                        <option value="PRECISIÓN">PRECISIÓN</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="capacidadAire1">Capacidad del Aire (BTU)</label>
+                                    <input type="number" id="capacidadAire1" class="form-control" placeholder="Ej: 24000">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="marcaEquipo1">Marca del equipo</label>
+                                    <input type="text" id="marcaEquipo1" class="form-control" placeholder="Ej: YORK">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="serieEquipo1">Serie del equipo</label>
+                                    <input type="text" id="serieEquipo1" class="form-control" placeholder="Ej: 020601028210200119">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="modeloEquipo1">Modelo del equipo</label>
+                                    <input type="text" id="modeloEquipo1" class="form-control" placeholder="Ej: YHFE24ZJMAXAORX">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="refrigerante1">Refrigerante</label>
+                                    <input type="text" id="refrigerante1" class="form-control" placeholder="Ej: R410A">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>¿El equipo cuenta con Activo Claro?</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="radio" id="activoClaroSi1" name="activoClaro1" value="Si">
+                                    <label for="activoClaroSi1">Sí</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="radio" id="activoClaroNo1" name="activoClaro1" value="No" checked>
+                                    <label for="activoClaroNo1">No</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" id="activoClaroContainer1" style="display: none;">
+                            <label for="activoClaroCodigo1">Activo Claro</label>
+                            <input type="text" id="activoClaroCodigo1" class="form-control" placeholder="Ej: 020601028210200119">
+                        </div>
+                        
+                        <h3 class="section-title">Mediciones del Equipo de Enfriamiento</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="setTemperatura1">Set de Temperatura (°C)</label>
+                                    <input type="number" id="setTemperatura1" class="form-control" placeholder="Ej: 25">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>¿Se realizaron las pruebas de presión del refrigerante?</label>
+                                    <div class="checkbox-group">
+                                        <div class="checkbox-item">
+                                            <input type="radio" id="pruebaPresionSi1" name="pruebaPresion1" value="Si">
+                                            <label for="pruebaPresionSi1">Sí</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="radio" id="pruebaPresionNo1" name="pruebaPresion1" value="No" checked>
+                                            <label for="pruebaPresionNo1">No</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="presionAlta1">Presión ALTA (PSI)</label>
+                                    <input type="number" id="presionAlta1" class="form-control" placeholder="Ej: 150">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="presionBaja1">Presión BAJA (PSI)</label>
+                                    <input type="number" id="presionBaja1" class="form-control" placeholder="Ej: 50">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h3 class="section-title">Voltaje que maneja el equipo</h3>
+                        
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Mediciones de Voltajes</th>
+                                    <th>Valor (V)</th>
+                                    <th>Mediciones de Voltajes</th>
+                                    <th>Valor (V)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>L1-N</td>
+                                    <td><input type="number" class="form-control" placeholder="110.80" step="0.01"></td>
+                                    <td>L1-L2</td>
+                                    <td><input type="number" class="form-control" placeholder="226.00" step="0.01"></td>
+                                </tr>
+                                <tr>
+                                    <td>L2-N</td>
+                                    <td><input type="number" class="form-control" placeholder="110.40" step="0.01"></td>
+                                    <td>L1-L3</td>
+                                    <td><input type="text" class="form-control" placeholder="N/A"></td>
+                                </tr>
+                                <tr>
+                                    <td>L3-N</td>
+                                    <td><input type="text" class="form-control" placeholder="N/A"></td>
+                                    <td>L2-L3</td>
+                                    <td><input type="text" class="form-control" placeholder="N/A"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h3 class="section-title">Medición de Corrientes (AMP)</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="corrienteL1_1">L1</label>
+                                    <input type="number" id="corrienteL1_1" class="form-control" placeholder="7.50" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="corrienteL2_1">L2</label>
+                                    <input type="number" id="corrienteL2_1" class="form-control" placeholder="7.50" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="corrienteL3_1">L3</label>
+                                    <input type="text" id="corrienteL3_1" class="form-control" placeholder="N/A">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h3 class="section-title">Sala de funcionamiento del AA</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="tempAmbiente1">Temperatura Ambiente (°C)</label>
+                                    <input type="number" id="tempAmbiente1" class="form-control" placeholder="25">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="capBreaker1">Capacidad del Breaker (AMP)</label>
+                                    <input type="number" id="capBreaker1" class="form-control" placeholder="40.00" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="puestaTierra1">Puesta a Tierra del equipo (Ω)</label>
+                                    <input type="number" id="puestaTierra1" class="form-control" placeholder="0.11" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h3 class="section-title">Fotografías del Equipo</h3>
+                        
+                        <div class="form-group">
+                            <label>Evidencia de limpieza del equipo</label>
+                            <div class="photo-upload" onclick="document.getElementById('fotoLimpieza1').click()">
+                                <i class="fas fa-camera"></i>
+                                <p>Haga clic para agregar fotos de limpieza (Antes, Durante, Después)</p>
+                                <input type="file" id="fotoLimpieza1" accept="image/*" multiple style="display: none;">
+                            </div>
+                            <div class="photo-preview" id="fotoLimpiezaPreview1"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Evidencia de estado del equipo</label>
+                            <div class="photo-upload" onclick="document.getElementById('fotoEstado1').click()">
+                                <i class="fas fa-camera"></i>
+                                <p>Haga clic para agregar fotos del estado del equipo</p>
+                                <input type="file" id="fotoEstado1" accept="image/*" multiple style="display: none;">
+                            </div>
+                            <div class="photo-preview" id="fotoEstadoPreview1"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>¿Cuenta con otro Aire Acondicionado?</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="radio" id="otroAireSi" name="otroAire" value="Si">
+                            <label for="otroAireSi">Sí</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="otroAireNo" name="otroAire" value="No" checked>
+                            <label for="otroAireNo">No</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <button class="btn" id="addAirConditioner"><i class="fas fa-plus"></i> Agregar Aire Acondicionado</button>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="energia-content">
+                <div class="form-section">
+                    <h2 class="section-title">Información de Energía</h2>
+                    <!-- Contenido para Energía -->
+                    <p>Formulario de energía en desarrollo...</p>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="infraestructura-content">
+                <div class="form-section">
+                    <h2 class="section-title">Información de Infraestructura</h2>
+                    <!-- Contenido para Infraestructura -->
+                    <p>Formulario de infraestructura en desarrollo...</p>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="rectificadores-content">
+                <div class="form-section">
+                    <h2 class="section-title">Información de Rectificadores</h2>
+                    <!-- Contenido para Rectificadores -->
+                    <p>Formulario de rectificadores en desarrollo...</p>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="tierras-content">
+                <div class="form-section">
+                    <h2 class="section-title">Información de Sistemas de Tierras</h2>
+                    <!-- Contenido para Tierras -->
+                    <p>Formulario de sistemas de tierras en desarrollo...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="section-title">Observaciones Generales</h2>
+            <div class="form-group">
+                <label for="observaciones">Escriba aquí cualquier observación adicional</label>
+                <textarea id="observaciones" class="form-control" rows="4" placeholder="Escriba sus observaciones aquí..."></textarea>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="section-title">Firma del Técnico</h2>
+            <div class="signature-pad">
+                <div class="signature-container" id="signaturePad"></div>
+                <button class="btn btn-secondary" id="clearSignature"><i class="fas fa-eraser"></i> Limpiar Firma</button>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-secondary" id="resetForm"><i class="fas fa-trash"></i> Limpiar Formulario</button>
+            <button class="btn" id="submitForm"><i class="fas fa-paper-plane"></i> Enviar Reporte</button>
+        </div>
+    </div>
+
+    <script>
+        // Contador de aires acondicionados
+        let airCounter = 1;
+        
+        // Manejo de pestañas
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remover clase active de todas las pestañas
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Agregar clase active a la pestaña seleccionada
+                tab.classList.add('active');
+                document.getElementById(`${tab.dataset.tab}-content`).classList.add('active');
+            });
+        });
+
+        // Mostrar/ocultar campo de Activo Claro según selección
+        document.querySelectorAll('input[name^="activoClaro"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const airId = this.name.replace('activoClaro', '');
+                const container = document.getElementById(`activoClaroContainer${airId}`);
+                if (this.value === 'Si') {
+                    container.style.display = 'block';
+                } else {
+                    container.style.display = 'none';
+                }
+            });
+        });
+
+        // Función para agregar un nuevo aire acondicionado
+        document.getElementById('addAirConditioner').addEventListener('click', function() {
+            airCounter++;
+            
+            const newAirSection = document.createElement('div');
+            newAirSection.className = 'air-conditioner-section';
+            newAirSection.id = `air-section-${airCounter}`;
+            
+            newAirSection.innerHTML = `
+                <div class="air-conditioner-header">
+                    <div class="air-conditioner-title">Aire Acondicionado #${airCounter}</div>
+                    <button class="remove-air-btn" data-air-id="${airCounter}">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="tipoAire${airCounter}">Tipo de Aire</label>
+                            <select id="tipoAire${airCounter}" class="form-control">
+                                <option value="" selected disabled>Seleccione el tipo</option>
+                                <option value="MINI SPLIT">MINI SPLIT</option>
+                                <option value="SPLIT">SPLIT</option>
+                                <option value="VENTANA">VENTANA</option>
+                                <option value="PRECISIÓN">PRECISIÓN</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="capacidadAire${airCounter}">Capacidad del Aire (BTU)</label>
+                            <input type="number" id="capacidadAire${airCounter}" class="form-control" placeholder="Ej: 24000">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="marcaEquipo${airCounter}">Marca del equipo</label>
+                            <input type="text" id="marcaEquipo${airCounter}" class="form-control" placeholder="Ej: YORK">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="serieEquipo${airCounter}">Serie del equipo</label>
+                            <input type="text" id="serieEquipo${airCounter}" class="form-control" placeholder="Ej: 020601028210200119">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="modeloEquipo${airCounter}">Modelo del equipo</label>
+                            <input type="text" id="modeloEquipo${airCounter}" class="form-control" placeholder="Ej: YHFE24ZJMAXAORX">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="refrigerante${airCounter}">Refrigerante</label>
+                            <input type="text" id="refrigerante${airCounter}" class="form-control" placeholder="Ej: R410A">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>¿El equipo cuenta con Activo Claro?</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="radio" id="activoClaroSi${airCounter}" name="activoClaro${airCounter}" value="Si">
+                            <label for="activoClaroSi${airCounter}">Sí</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="activoClaroNo${airCounter}" name="activoClaro${airCounter}" value="No" checked>
+                            <label for="activoClaroNo${airCounter}">No</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group" id="activoClaroContainer${airCounter}" style="display: none;">
+                    <label for="activoClaroCodigo${airCounter}">Activo Claro</label>
+                    <input type="text" id="activoClaroCodigo${airCounter}" class="form-control" placeholder="Ej: 020601028210200119">
+                </div>
+                
+                <h3 class="section-title">Mediciones del Equipo de Enfriamiento</h3>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="setTemperatura${airCounter}">Set de Temperatura (°C)</label>
+                            <input type="number" id="setTemperatura${airCounter}" class="form-control" placeholder="Ej: 25">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>¿Se realizaron las pruebas de presión del refrigerante?</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="radio" id="pruebaPresionSi${airCounter}" name="pruebaPresion${airCounter}" value="Si">
+                                    <label for="pruebaPresionSi${airCounter}">Sí</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="radio" id="pruebaPresionNo${airCounter}" name="pruebaPresion${airCounter}" value="No" checked>
+                                    <label for="pruebaPresionNo${airCounter}">No</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="presionAlta${airCounter}">Presión ALTA (PSI)</label>
+                            <input type="number" id="presionAlta${airCounter}" class="form-control" placeholder="Ej: 150">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="presionBaja${airCounter}">Presión BAJA (PSI)</label>
+                            <input type="number" id="presionBaja${airCounter}" class="form-control" placeholder="Ej: 50">
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="section-title">Voltaje que maneja el equipo</h3>
+                
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Mediciones de Voltajes</th>
+                            <th>Valor (V)</th>
+                            <th>Mediciones de Voltajes</th>
+                            <th>Valor (V)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>L1-N</td>
+                            <td><input type="number" class="form-control" placeholder="110.80" step="0.01"></td>
+                            <td>L1-L2</td>
+                            <td><input type="number" class="form-control" placeholder="226.00" step="0.01"></td>
+                        </tr>
+                        <tr>
+                            <td>L2-N</td>
+                            <td><input type="number" class="form-control" placeholder="110.40" step="0.01"></td>
+                            <td>L1-L3</td>
+                            <td><input type="text" class="form-control" placeholder="N/A"></td>
+                        </tr>
+                        <tr>
+                            <td>L3-N</td>
+                            <td><input type="text" class="form-control" placeholder="N/A"></td>
+                            <td>L2-L3</td>
+                            <td><input type="text" class="form-control" placeholder="N/A"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3 class="section-title">Medición de Corrientes (AMP)</h3>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="corrienteL1_${airCounter}">L1</label>
+                            <input type="number" id="corrienteL1_${airCounter}" class="form-control" placeholder="7.50" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="corrienteL2_${airCounter}">L2</label>
+                            <input type="number" id="corrienteL2_${airCounter}" class="form-control" placeholder="7.50" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="corrienteL3_${airCounter}">L3</label>
+                            <input type="text" id="corrienteL3_${airCounter}" class="form-control" placeholder="N/A">
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="section-title">Sala de funcionamiento del AA</h3>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="tempAmbiente${airCounter}">Temperatura Ambiente (°C)</label>
+                            <input type="number" id="tempAmbiente${airCounter}" class="form-control" placeholder="25">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="capBreaker${airCounter}">Capacidad del Breaker (AMP)</label>
+                            <input type="number" id="capBreaker${airCounter}" class="form-control" placeholder="40.00" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="puestaTierra${airCounter}">Puesta a Tierra del equipo (Ω)</label>
+                            <input type="number" id="puestaTierra${airCounter}" class="form-control" placeholder="0.11" step="0.01">
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="section-title">Fotografías del Equipo</h3>
+                
+                <div class="form-group">
+                    <label>Evidencia de limpieza del equipo</label>
+                    <div class="photo-upload" onclick="document.getElementById('fotoLimpieza${airCounter}').click()">
+                        <i class="fas fa-camera"></i>
+                        <p>Haga clic para agregar fotos de limpieza (Antes, Durante, Después)</p>
+                        <input type="file" id="fotoLimpieza${airCounter}" accept="image/*" multiple style="display: none;">
+                    </div>
+                    <div class="photo-preview" id="fotoLimpiezaPreview${airCounter}"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Evidencia de estado del equipo</label>
+                    <div class="photo-upload" onclick="document.getElementById('fotoEstado${airCounter}').click()">
+                        <i class="fas fa-camera"></i>
+                        <p>Haga clic para agregar fotos del estado del equipo</p>
+                        <input type="file" id="fotoEstado${airCounter}" accept="image/*" multiple style="display: none;">
+                    </div>
+                    <div class="photo-preview" id="fotoEstadoPreview${airCounter}"></div>
+                </div>
+            `;
+            
+            document.getElementById('aires-container').appendChild(newAirSection);
+            
+            // Configurar eventos para el nuevo aire
+            setupPhotoUpload(`fotoLimpieza${airCounter}`, `fotoLimpiezaPreview${airCounter}`);
+            setupPhotoUpload(`fotoEstado${airCounter}`, `fotoEstadoPreview${airCounter}`);
+            
+            // Configurar evento para mostrar/ocultar activo claro
+            document.querySelectorAll(`input[name="activoClaro${airCounter}"]`).forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const container = document.getElementById(`activoClaroContainer${airCounter}`);
+                    if (this.value === 'Si') {
+                        container.style.display = 'block';
+                    } else {
+                        container.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Configurar evento para eliminar este aire
+            document.querySelector(`[data-air-id="${airCounter}"]`).addEventListener('click', function() {
+                if (confirm('¿Está seguro de que desea eliminar este aire acondicionado?')) {
+                    document.getElementById(`air-section-${airCounter}`).remove();
+                }
+            });
+            
+            // Mostrar el botón de eliminar para el primer aire si hay más de uno
+            if (airCounter > 1) {
+                document.querySelector('[data-air-id="1"]').style.display = 'block';
+            }
+        });
+
+        // Manejo de subida de fotos
+        const setupPhotoUpload = (inputId, previewId) => {
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            
+            if (input && preview) {
+                input.addEventListener('change', function() {
+                    preview.innerHTML = '';
+                    
+                    for (const file of this.files) {
+                        const reader = new FileReader();
+                        
+                        reader.onload = function(e) {
+                            const photoItem = document.createElement('div');
+                            photoItem.className = 'photo-item';
+                            
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            
+                            const removeBtn = document.createElement('div');
+                            removeBtn.className = 'remove-photo';
+                            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                            removeBtn.addEventListener('click', () => photoItem.remove());
+                            
+                            const caption = document.createElement('div');
+                            caption.className = 'photo-caption';
+                            caption.textContent = file.name.length > 20 ? file.name.substring(0, 17) + '...' : file.name;
+                            
+                            photoItem.appendChild(img);
+                            photoItem.appendChild(removeBtn);
+                            photoItem.appendChild(caption);
+                            preview.appendChild(photoItem);
+                        };
+                        
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        };
+
+        // Configurar los inputs de fotos para el primer aire
+        setupPhotoUpload('fotoLimpieza1', 'fotoLimpiezaPreview1');
+        setupPhotoUpload('fotoEstado1', 'fotoEstadoPreview1');
+
+        // Generación de PDF (simplificada para este ejemplo)
+        document.getElementById('generatePdf').addEventListener('click', function() {
+            alert('Funcionalidad de generación de PDF se activaría aquí. En una implementación real, se generaría un PDF con todos los datos del formulario.');
+            
+            // En una implementación real, aquí se usarían las librerías jsPDF y html2canvas
+            // para capturar el contenido del formulario y generar un PDF con él
+        });
+
+        // Limpiar firma
+        document.getElementById('clearSignature').addEventListener('click', function() {
+            const canvas = document.getElementById('signaturePad');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        // Enviar formulario
+        document.getElementById('submitForm').addEventListener('click', function() {
+            alert('Formulario enviado con éxito. En una implementación real, los datos se enviarían a un servidor.');
+        });
+
+        // Limpiar formulario
+        document.getElementById('resetForm').addEventListener('click', function() {
+            if (confirm('¿Está seguro de que desea limpiar todo el formulario? Se perderán todos los datos.')) {
+                document.querySelectorAll('input, textarea, select').forEach(element => {
+                    if (element.type === 'checkbox' || element.type === 'radio') {
+                        // Para radios, establecer el valor por defecto
+                        if (element.name === 'activoClaro1') {
+                            element.checked = (element.value === 'No');
+                            document.getElementById('activoClaroContainer1').style.display = 'none';
+                        } else if (element.name === 'pruebaPresion1') {
+                            element.checked = (element.value === 'No');
+                        } else if (element.name === 'otroAire') {
+                            element.checked = (element.value === 'No');
+                        }
+                    } else if (element.type !== 'file') {
+                        element.value = '';
+                    }
+                });
+                
+                // Restablecer valores predeterminados para el primer aire
+                document.getElementById('tipoAire1').selectedIndex = 0;
+                
+                // Eliminar aires adicionales
+                for (let i = 2; i <= airCounter; i++) {
+                    const airSection = document.getElementById(`air-section-${i}`);
+                    if (airSection) {
+                        airSection.remove();
+                    }
+                }
+                airCounter = 1;
+                
+                // Ocultar botón de eliminar del primer aire
+                document.querySelector('[data-air-id="1"]').style.display = 'none';
+                
+                document.querySelectorAll('.photo-preview').forEach(preview => {
+                    preview.innerHTML = '';
+                });
+                
+                const canvas = document.getElementById('signaturePad');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        });
+
+        // Guardar borrador
+        document.getElementById('saveBtn').addEventListener('click', function() {
+            alert('Borrador guardado. En una implementación real, los datos se guardarían en el almacenamiento local.');
+        });
+
+        // Inicializar pad de firma
+        const canvas = document.getElementById('signaturePad');
+        if (canvas.getContext) {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            function startDrawing(e) {
+                isDrawing = true;
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+            }
+
+            function draw(e) {
+                if (!isDrawing) return;
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+            }
+
+            function stopDrawing() {
+                isDrawing = false;
+            }
+        }
+    </script>
+</body>
+</html>
